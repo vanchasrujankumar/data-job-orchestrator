@@ -19,7 +19,7 @@ completion/failure events back to Kafka (transactional outbox).
 | Build | Gradle **8.14.3** wrapper | **not Maven** — user explicitly requested Gradle |
 | Database | **MongoDB** (Spring Data MongoDB) | **not PostgreSQL** — user explicitly switched |
 | Messaging | Apache Kafka | Spring Kafka |
-| Execution | Google Cloud Dataproc SDK (`google-cloud-dataproc:4.51.0`) | behind a `DataprocClient` port (`gcp` / `noop`) |
+| Execution | Google Cloud Dataproc **Serverless** SDK (`google-cloud-dataproc:4.51.0`) | behind a `DataprocClient` port (`serverless` / `noop`) |
 | Observability | **OpenTelemetry** (OTEL 1.50.0) | **not Micrometer** — user explicitly requested OTEL |
 | API docs | springdoc-openapi 2.8.9 (Swagger UI) | `/swagger-ui.html` |
 
@@ -47,7 +47,7 @@ api/            REST controllers + DTOs
 alert/          AlertService port + LoggingAlertService (pluggable; no real platform)
 common/         CorrelationIdFilter, GlobalExceptionHandler (RFC 9457), domain exceptions
 config/         OrchestratorProperties, KafkaConfig, MongoConfig, OpenTelemetryConfig, OpenApiConfig
-dataproc/       DataprocClient (GoogleDataprocClient + NoopDataprocClient), SparkJobSpec
+dataproc/       DataprocClient (GoogleDataprocServerlessClient + NoopDataprocClient), SparkJobSpec
 job/            MongoDB documents, repositories, JobStateMachine, JobService, RetryPolicy, FailureClassifier
 metrics/        OrchestratorMetrics (OTEL Meter)
 outbox/         OutboxEventEntity + OutboxPublisher (relay) + OutboxService

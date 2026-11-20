@@ -74,8 +74,6 @@ public class JobEntity {
 
     private String dataprocRegion;
 
-    private String dataprocClusterName;
-
     /** Serialized {@code SparkJobSpec} JSON for this job. */
     private String executionConfig;
 

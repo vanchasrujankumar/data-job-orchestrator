@@ -53,7 +53,6 @@ orchestrator:
     provider: ${DATAPROC_PROVIDER:noop}
     project-id: ${GCP_PROJECT_ID:}
     region: ${GCP_REGION:us-central1}
-    cluster-name: ${GCP_CLUSTER_NAME:default-cluster}
     endpoint: ${GCP_DATAPROC_ENDPOINT:}
   timeout:
     default-max-duration: 1h

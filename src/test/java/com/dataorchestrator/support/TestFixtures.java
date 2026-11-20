@@ -21,7 +21,7 @@ public final class TestFixtures {
             new OrchestratorProperties.Concurrency(10, Map.of("SEGMENT_PREVIEW", 5),
                 100, Duration.ofSeconds(60)),
             new OrchestratorProperties.Retry(3, Duration.ofSeconds(60), 2.0, Duration.ofSeconds(900)),
-            new OrchestratorProperties.Dataproc("noop", "project", "us-central1", "cluster", null),
+            new OrchestratorProperties.Dataproc("noop", "project", "us-central1", null),
             new OrchestratorProperties.Timeout(Duration.ofHours(1), Map.of()),
             new OrchestratorProperties.Scheduling(Duration.ofSeconds(5), Duration.ofSeconds(15),
                 Duration.ofSeconds(15), Duration.ofSeconds(60), Duration.ofSeconds(5),

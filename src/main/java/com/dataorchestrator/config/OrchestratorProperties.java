@@ -35,7 +35,7 @@ public record OrchestratorProperties(
     }
 
     public record Dataproc(String provider, String projectId, String region,
-                           String clusterName, String endpoint) {
+                           String endpoint) {
     }
 
     public record Timeout(Duration defaultMaxDuration, Map<String, Duration> byJobType) {

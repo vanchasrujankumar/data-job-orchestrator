@@ -101,13 +101,20 @@ and is skipped otherwise.
 ## Using real Google Cloud Dataproc
 
 ```bash
-export DATAPROC_PROVIDER=gcp
-export GCP_PROJECT_ID=my-project
-export GCP_REGION=us-central1
-export GCP_CLUSTER_NAME=my-cluster
-
 # Authenticate with Application Default Credentials
 gcloud auth application-default login
 ```
 
+**Dataproc Serverless:**
+
+```bash
+export DATAPROC_PROVIDER=serverless
+export GCP_PROJECT_ID=my-project
+export GCP_REGION=us-central1
+```
+
+Submissions use the Dataproc Serverless `BatchControllerClient`; each job is a Spark batch
+and no cluster needs to exist. Jobs are submitted asynchronously (non-blocking).
+
 Then run the app; submissions use the official Dataproc Java SDK.
+

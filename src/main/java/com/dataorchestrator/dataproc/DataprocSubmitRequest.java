@@ -10,8 +10,7 @@ public record DataprocSubmitRequest(
     int attemptNumber,
     SparkJobSpec spec,
     String projectId,
-    String region,
-    String clusterName
+    String region
 ) {
     /** Deterministic request id used for idempotent Dataproc submission. */
     public String requestId() {

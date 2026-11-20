@@ -14,7 +14,6 @@ public record SparkJobSpec(
     @NotBlank String mainClass,
     @NotNull List<String> jarFileUris,
     @NotNull List<String> args,
-    @NotNull Map<String, String> properties,
-    String clusterName
+    @NotNull Map<String, String> properties
 ) {
 }

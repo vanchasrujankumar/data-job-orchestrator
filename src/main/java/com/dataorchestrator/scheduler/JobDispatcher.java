@@ -93,15 +93,14 @@ public class JobDispatcher {
         SparkJobSpec spec = parseSpec(job);
         String project = props.dataproc().projectId();
         String region = props.dataproc().region();
-        String cluster = spec.clusterName() != null ? spec.clusterName() : props.dataproc().clusterName();
 
         int attemptNumber = jobService.beginAttempt(job.getJobId());
         DataprocSubmitRequest request = new DataprocSubmitRequest(
-            job.getJobId(), attemptNumber, spec, project, region, cluster);
+            job.getJobId(), attemptNumber, spec, project, region);
 
         try {
             DataprocSubmitResult result = dataprocClient.submit(request);
-            jobService.markSubmitted(job.getJobId(), result.dataprocJobId(), project, region, cluster);
+            jobService.markSubmitted(job.getJobId(), result.dataprocJobId(), project, region);
         } catch (DataprocException e) {
             handleSubmissionFailure(job, e);
         } catch (Exception e) {

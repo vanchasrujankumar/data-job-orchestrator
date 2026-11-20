@@ -96,7 +96,7 @@ class JobDispatcherTest {
         dispatcher.dispatch();
 
         verify(dataprocClient).submit(any());
-        verify(jobService).markSubmitted(eq("job-1"), eq("dataproc-1"), anyString(), anyString(), anyString());
+        verify(jobService).markSubmitted(eq("job-1"), eq("dataproc-1"), anyString(), anyString());
     }
 
     @Test

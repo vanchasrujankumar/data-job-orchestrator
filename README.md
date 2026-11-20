@@ -12,7 +12,7 @@ back to Kafka.
 | Build | Gradle (wrapper included) |
 | Messaging | Apache Kafka |
 | Database | MongoDB (replica set, via Docker) |
-| Execution | Google Cloud Dataproc (Spark) |
+| Execution | Google Cloud Dataproc **Serverless** (Spark batches) |
 | Observability | OpenTelemetry (metrics + tracing) — no Micrometer |
 | API docs | OpenAPI / Swagger UI |
 

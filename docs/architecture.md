@@ -12,7 +12,7 @@ flowchart LR
         C[Kafka Consumer<br/>validate + dedup] --> S[JobService<br/>persist RECEIVED → QUEUED]
         S --> DB[(MongoDB<br/>jobs / attempts / history / outbox)]
         D[Dispatcher<br/>claim + submit] --> DB
-        D --> G[DataprocClient<br/>GCP or Noop]
+        D --> G[DataprocClient<br/>Serverless or Noop]
         M[Monitor<br/>poll status] --> G
         M --> DB
         R[RetryScheduler] --> DB
@@ -191,7 +191,7 @@ com.dataorchestrator
 ├── alert/          AlertService abstraction + logging impl
 ├── common/         correlation filter, exception handling, domain exceptions
 ├── config/         properties, Kafka, OpenTelemetry, MongoDB, OpenAPI
-├── dataproc/       DataprocClient (GCP + Noop) and SparkJobSpec
+├── dataproc/       DataprocClient (Serverless + Noop) and SparkJobSpec
 ├── job/            documents, repositories, state machine, JobService
 ├── metrics/        OpenTelemetry metrics
 ├── outbox/         transactional outbox + publisher

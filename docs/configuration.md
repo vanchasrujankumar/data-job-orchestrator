@@ -36,10 +36,9 @@ available as uppercase environment variables.
 
 | Key | Default | Description |
 |---|---|---|
-| `provider` | `noop` | `noop` (simulated) or `gcp` (real SDK) |
+| `provider` | `noop` | `noop` (simulated) or `serverless` (Dataproc Serverless/Batch SDK) |
 | `project-id` | — | GCP project |
 | `region` | `us-central1` | Dataproc region |
-| `cluster-name` | `default-cluster` | Dataproc cluster |
 | `endpoint` | — | Optional Dataproc endpoint override |
 
 ## `orchestrator.timeout`
@@ -79,7 +78,6 @@ available as uppercase environment variables.
 | `DATAPROC_PROVIDER` | `orchestrator.dataproc.provider` |
 | `GCP_PROJECT_ID` | `orchestrator.dataproc.project-id` |
 | `GCP_REGION` | `orchestrator.dataproc.region` |
-| `GCP_CLUSTER_NAME` | `orchestrator.dataproc.cluster-name` |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | `orchestrator.otel.otlp-endpoint` |
 | `OTEL_ENABLED` | `orchestrator.otel.enabled` |
 

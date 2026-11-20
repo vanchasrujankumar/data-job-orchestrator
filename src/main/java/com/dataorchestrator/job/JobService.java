@@ -122,12 +122,11 @@ public class JobService {
     /** Records a successful Dataproc submission and updates the current execution attempt. */
     @Transactional
     public JobEntity markSubmitted(String jobId, String dataprocJobId, String projectId,
-                                   String region, String clusterName) {
+                                   String region) {
         JobEntity job = get(jobId);
         job.setDataprocJobId(dataprocJobId);
         job.setDataprocProjectId(projectId);
         job.setDataprocRegion(region);
-        job.setDataprocClusterName(clusterName);
         transition(job, JobStatus.SUBMITTED, "Submitted to Dataproc");
         attemptRepository.findByJobIdAndAttemptNumber(jobId, job.getAttemptCount())
             .ifPresent(a -> {
