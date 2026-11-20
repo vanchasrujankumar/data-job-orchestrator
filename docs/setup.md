@@ -59,10 +59,22 @@ extra environment variables are needed for a local run with the `noop` Dataproc 
        "mainClass": "com.example.SegmentPreviewApp",
        "jarFileUris": ["gs://my-bucket/app.jar"],
        "args": ["--date=2026-11-19"],
-       "properties": { "spark.executor.memory": "2g" }
+       "properties": {
+         "spark.dynamicAllocation.enabled": "true",
+         "spark.dynamicAllocation.minExecutors": "2",
+         "spark.dynamicAllocation.maxExecutors": "20",
+         "spark.dynamicAllocation.initialExecutors": "2",
+         "spark.executor.memory": "4g",
+         "spark.executor.cores": "2",
+         "spark.executor.memoryOverhead": "1g",
+         "spark.driver.memory": "2g"
+       }
      }
    }
    ```
+
+   `executionParameters.properties` is the Spark configuration applied to the Dataproc
+   Serverless batch runtime (dynamic executor allocation and memory settings above).
 
 3. Verify the job was accepted and completed:
 
