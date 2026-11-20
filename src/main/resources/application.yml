@@ -1,0 +1,81 @@
+spring:
+  application:
+    name: data-job-orchestrator
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/orchestrator}
+      auto-index-creation: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+  mvc:
+    problemdetails:
+      enabled: true
+  jackson:
+    default-property-inclusion: non_null
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+orchestrator:
+  kafka:
+    job-request-topic: ${KAFKA_JOB_REQUEST_TOPIC:job-requests}
+    job-events-topic: ${KAFKA_JOB_EVENTS_TOPIC:job-events}
+    dead-letter-topic: ${KAFKA_DEAD_LETTER_TOPIC:job-requests-dlt}
+    consumer-group: ${KAFKA_CONSUMER_GROUP:data-job-orchestrator}
+    consumer-concurrency: 3
+  concurrency:
+    global-max-jobs: 10
+    job-types:
+      SEGMENT_PREVIEW: 5
+      SEGMENT_METRICS: 3
+      SEGMENT_DELIVERY: 2
+    dispatch-batch-size: 100
+    lease-duration: 60s
+  retry:
+    max-attempts: 3
+    initial-delay: 60s
+    multiplier: 2
+    max-delay: 900s
+  dataproc:
+    provider: ${DATAPROC_PROVIDER:noop}
+    project-id: ${GCP_PROJECT_ID:}
+    region: ${GCP_REGION:us-central1}
+    cluster-name: ${GCP_CLUSTER_NAME:default-cluster}
+    endpoint: ${GCP_DATAPROC_ENDPOINT:}
+  timeout:
+    default-max-duration: 1h
+    by-job-type:
+      SEGMENT_PREVIEW: 30m
+      SEGMENT_METRICS: 1h
+      SEGMENT_DELIVERY: 2h
+  scheduling:
+    dispatch-interval: 5s
+    monitor-interval: 15s
+    retry-interval: 15s
+    reconcile-interval: 60s
+    outbox-interval: 5s
+    starvation-threshold: 5m
+  otel:
+    enabled: ${OTEL_ENABLED:true}
+    service-name: data-job-orchestrator
+    otlp-endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:}
+  alerting:
+    queue-delay-threshold: 30m
+
+logging:
+  level:
+    root: INFO
+    com.dataorchestrator: INFO

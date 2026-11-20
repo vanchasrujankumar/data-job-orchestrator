@@ -1,0 +1,65 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.7'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.dataorchestrator'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    // OpenTelemetry SDK version (single source of truth for all OTEL artifacts)
+    otelVersion = '1.50.0'
+    testcontainersVersion = '1.20.4'
+}
+
+dependencies {
+    // ---- Spring Boot core ----
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    // ---- OpenTelemetry (metrics + tracing; intentionally NOT Micrometer) ----
+    implementation "io.opentelemetry:opentelemetry-api:${otelVersion}"
+    implementation "io.opentelemetry:opentelemetry-sdk:${otelVersion}"
+    implementation "io.opentelemetry:opentelemetry-exporter-otlp:${otelVersion}"
+    implementation "io.opentelemetry:opentelemetry-exporter-logging:${otelVersion}"
+
+    // Structured JSON logging (correlation IDs, MDC) via Logstash encoder
+    implementation 'net.logstash.logback:logstash-logback-encoder:8.1'
+
+    // OpenAPI / Swagger UI for the REST API
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
+
+    // ---- Google Cloud Dataproc client SDK ----
+    implementation 'com.google.cloud:google-cloud-dataproc:4.51.0'
+
+    // ---- Lombok ----
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // ---- Tests ----
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
+    testImplementation "org.testcontainers:mongodb:${testcontainersVersion}"
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

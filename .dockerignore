@@ -1,0 +1,8 @@
+.git
+.gradle
+build
+.idea
+*.iml
+.vscode
+.DS_Store
+!build/libs/data-job-orchestrator-0.0.1-SNAPSHOT.jar

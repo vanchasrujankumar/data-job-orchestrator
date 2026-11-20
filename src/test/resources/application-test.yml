@@ -1,0 +1,15 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    listener:
+      auto-startup: false
+
+orchestrator:
+  dataproc:
+    provider: noop
+  otel:
+    enabled: false
+
+logging:
+  level:
+    root: INFO
