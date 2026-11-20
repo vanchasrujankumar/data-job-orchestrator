@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.dataorchestrator.dataproc.SparkJobDefinition;
+
 /**
  * Typed configuration for the orchestrator, bound from the {@code orchestrator.*}
  * namespace. All timing and limit values are environment-driven so behaviour can change
@@ -19,7 +21,8 @@ public record OrchestratorProperties(
     Timeout timeout,
     Scheduling scheduling,
     Otel otel,
-    Alerting alerting
+    Alerting alerting,
+    Map<String, SparkJobDefinition> sparkJobs
 ) {
 
     public record Kafka(String jobRequestTopic, String jobEventsTopic, String deadLetterTopic,
@@ -60,5 +63,10 @@ public record OrchestratorProperties(
     /** Resolves the per-job-type concurrency limit, falling back to the global limit. */
     public int concurrencyLimit(String jobType) {
         return concurrency.jobTypes().getOrDefault(jobType, concurrency.globalMaxJobs());
+    }
+
+    /** Returns the Spark job definition for a job type, or null if not configured. */
+    public SparkJobDefinition sparkJob(String jobType) {
+        return sparkJobs.get(jobType);
     }
 }

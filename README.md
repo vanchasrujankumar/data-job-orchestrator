@@ -55,7 +55,8 @@ After startup:
      --bootstrap-server localhost:9092 --topic job-requests
    ```
 
-   Paste this message, then press `Ctrl+D`:
+   Paste this message, then press `Ctrl+D`. Only business data is sent over Kafka — the
+   Spark job itself is configured per job type (see step 2b below):
 
    ```json
    {
@@ -64,27 +65,39 @@ After startup:
      "jobType": "SEGMENT_PREVIEW",
      "correlationId": "seg-1",
      "priority": "HIGH",
-     "executionParameters": {
-       "mainClass": "com.example.SegmentPreviewApp",
-       "jarFileUris": ["gs://my-bucket/app.jar"],
-       "args": ["--date=2026-11-19"],
-       "properties": {
-         "spark.dynamicAllocation.enabled": "true",
-         "spark.dynamicAllocation.minExecutors": "2",
-         "spark.dynamicAllocation.maxExecutors": "20",
-         "spark.dynamicAllocation.initialExecutors": "2",
-         "spark.executor.memory": "4g",
-         "spark.executor.cores": "2",
-         "spark.executor.memoryOverhead": "1g",
-         "spark.driver.memory": "2g"
+     "jobParameters": {
+       "previewMessage": "New segment preview request",
+       "segmentCriteria": {
+         "segmentId": "seg-42",
+         "startDate": "2026-11-01",
+         "endDate": "2026-11-19"
        }
      }
    }
    ```
 
-   `executionParameters.properties` holds the Spark configuration (dynamic executor
-   allocation + memory settings above) and is applied to the Dataproc Serverless batch
-   runtime — equivalent to:
+   The `jobParameters` object is serialized to JSON and passed to the Spark job as its single
+   argument. The Spark workload itself is defined in `orchestrator.spark-jobs` (in
+   `application.yml` / env), e.g.:
+
+   ```yaml
+   orchestrator:
+     spark-jobs:
+       SEGMENT_PREVIEW:
+         main-class: com.example.SegmentPreviewApp
+         jar-file-uris: [ gs://my-bucket/app.jar ]
+         properties:
+           spark.dynamicAllocation.enabled: "true"
+           spark.dynamicAllocation.minExecutors: "2"
+           spark.dynamicAllocation.maxExecutors: "20"
+           spark.dynamicAllocation.initialExecutors: "2"
+           spark.executor.memory: "4g"
+           spark.executor.cores: "2"
+           spark.executor.memoryOverhead: "1g"
+           spark.driver.memory: "2g"
+   ```
+
+   Equivalent to running:
 
    ```bash
    spark-submit --class com.example.SegmentPreviewApp \
@@ -95,7 +108,7 @@ After startup:
      --conf spark.executor.cores=2 \
      --conf spark.executor.memoryOverhead=1g \
      --conf spark.driver.memory=2g \
-     gs://my-bucket/app.jar --date=2026-11-19
+     gs://my-bucket/app.jar '{"previewMessage":"...","segmentCriteria":{...}}'
    ```
 
 3. Verify the job was accepted and completed:

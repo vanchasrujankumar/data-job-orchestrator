@@ -30,7 +30,6 @@ import com.dataorchestrator.job.JobService;
 import com.dataorchestrator.job.JobStatus;
 import com.dataorchestrator.metrics.OrchestratorMetrics;
 import com.dataorchestrator.support.TestFixtures;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests for the dispatch scheduler: concurrency gating and claim-submit flow.
@@ -58,9 +57,8 @@ class JobDispatcherTest {
 
     @BeforeEach
     void setUp() {
-        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
         dispatcher = new JobDispatcher(jobRepository, jobService, concurrencyService,
-            schedulerControl, dataprocClient, props, identity, metrics, objectMapper);
+            schedulerControl, dataprocClient, props, identity, metrics);
     }
 
     private JobEntity queuedJob() {
@@ -73,9 +71,7 @@ class JobDispatcherTest {
             .status(JobStatus.QUEUED)
             .attemptCount(0)
             .maxAttempts(3)
-            .executionConfig("""
-                {"mainClass":"c","jarFileUris":["j"],"args":[],"properties":{}}
-                """)
+            .jobParameters("{\"previewMessage\":\"hi\",\"segmentCriteria\":{}}")
             .executionTimeoutSeconds(3600)
             .createdAt(Instant.now())
             .build();

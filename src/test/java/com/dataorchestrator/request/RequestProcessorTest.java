@@ -53,11 +53,13 @@ class RequestProcessorTest {
               "jobId": "job-1",
               "jobType": "SEGMENT_PREVIEW",
               "priority": "HIGH",
-              "executionParameters": {
-                "mainClass": "com.example.SparkApp",
-                "jarFileUris": ["gs://bucket/app.jar"],
-                "args": ["--date=2026-01-01"],
-                "properties": {"spark.executor.memory": "2g"}
+              "jobParameters": {
+                "previewMessage": "New segment preview request",
+                "segmentCriteria": {
+                  "segmentId": "seg-42",
+                  "startDate": "2026-11-01",
+                  "endDate": "2026-11-19"
+                }
               }
             }
             """;
@@ -98,16 +100,14 @@ class RequestProcessorTest {
     @Test
     void missingJobTypeIsRejected() {
         String json = """
-            {"eventId": "evt-2", "executionParameters": {
-                "mainClass": "c", "jarFileUris": ["j"], "args": [], "properties": {}
-            }}
+            {"eventId": "evt-2", "jobParameters": {"previewMessage": "hello"}}
             """;
         assertThatThrownBy(() -> processor.process(json))
             .isInstanceOf(JobValidationException.class);
     }
 
     @Test
-    void missingExecutionParametersIsRejected() {
+    void missingJobParametersIsRejected() {
         String json = """
             {"eventId": "evt-3", "jobType": "SEGMENT_PREVIEW"}
             """;

@@ -43,10 +43,11 @@ extra environment variables are needed for a local run with the `noop` Dataproc 
 
    ```bash
    docker compose exec kafka \
-     kafka-console-producer.sh --bootstrap-server localhost:9092 --topic job-requests
+     /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic job-requests
    ```
 
-   Then paste this message and press Enter (press Ctrl+D to finish):
+   Then paste this message and press Enter (press Ctrl+D to finish). Only business data is
+   sent over Kafka — the Spark job is configured per job type (see step 2b):
 
    ```json
    {
@@ -55,26 +56,37 @@ extra environment variables are needed for a local run with the `noop` Dataproc 
      "jobType": "SEGMENT_PREVIEW",
      "correlationId": "segment-0001",
      "priority": "HIGH",
-     "executionParameters": {
-       "mainClass": "com.example.SegmentPreviewApp",
-       "jarFileUris": ["gs://my-bucket/app.jar"],
-       "args": ["--date=2026-11-19"],
-       "properties": {
-         "spark.dynamicAllocation.enabled": "true",
-         "spark.dynamicAllocation.minExecutors": "2",
-         "spark.dynamicAllocation.maxExecutors": "20",
-         "spark.dynamicAllocation.initialExecutors": "2",
-         "spark.executor.memory": "4g",
-         "spark.executor.cores": "2",
-         "spark.executor.memoryOverhead": "1g",
-         "spark.driver.memory": "2g"
+     "jobParameters": {
+       "previewMessage": "New segment preview request",
+       "segmentCriteria": {
+         "segmentId": "seg-42",
+         "startDate": "2026-11-01",
+         "endDate": "2026-11-19"
        }
      }
    }
    ```
 
-   `executionParameters.properties` is the Spark configuration applied to the Dataproc
-   Serverless batch runtime (dynamic executor allocation and memory settings above).
+   The `jobParameters` object is serialized to JSON and passed to the Spark job as its single
+   argument. The Spark workload itself is defined in `orchestrator.spark-jobs` (see
+   [configuration.md](configuration.md) and `application.yml`), e.g.:
+
+   ```yaml
+   orchestrator:
+     spark-jobs:
+       SEGMENT_PREVIEW:
+         main-class: com.example.SegmentPreviewApp
+         jar-file-uris: [ gs://my-bucket/app.jar ]
+         properties:
+           spark.dynamicAllocation.enabled: "true"
+           spark.dynamicAllocation.minExecutors: "2"
+           spark.dynamicAllocation.maxExecutors: "20"
+           spark.dynamicAllocation.initialExecutors: "2"
+           spark.executor.memory: "4g"
+           spark.executor.cores: "2"
+           spark.executor.memoryOverhead: "1g"
+           spark.driver.memory: "2g"
+   ```
 
 3. Verify the job was accepted and completed:
 

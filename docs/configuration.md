@@ -41,6 +41,36 @@ available as uppercase environment variables.
 | `region` | `us-central1` | Dataproc region |
 | `endpoint` | — | Optional Dataproc endpoint override |
 
+## `orchestrator.spark-jobs`
+
+Defines the Spark workload per job type. The Spark job (main class, jar files and Spark
+configuration such as dynamic executor allocation and memory settings) is configured once
+here; each Kafka request only supplies the business `jobParameters` passed to the job as a
+single JSON argument.
+
+```yaml
+orchestrator:
+  spark-jobs:
+    SEGMENT_PREVIEW:
+      main-class: com.example.SegmentPreviewApp
+      jar-file-uris: [ gs://my-bucket/app.jar ]
+      properties:
+        spark.dynamicAllocation.enabled: "true"
+        spark.dynamicAllocation.minExecutors: "2"
+        spark.dynamicAllocation.maxExecutors: "20"
+        spark.dynamicAllocation.initialExecutors: "2"
+        spark.executor.memory: "4g"
+        spark.executor.cores: "2"
+        spark.executor.memoryOverhead: "1g"
+        spark.driver.memory: "2g"
+```
+
+| Key | Description |
+|---|---|
+| `main-class` | Spark main class |
+| `jar-file-uris` | Jar files made available to the Spark job |
+| `properties` | `spark.*` configuration (executor allocation + memory), applied to the Dataproc Serverless batch runtime |
+
 ## `orchestrator.timeout`
 
 | Key | Default | Description |

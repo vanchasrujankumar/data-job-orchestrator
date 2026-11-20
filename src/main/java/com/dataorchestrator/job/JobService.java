@@ -55,7 +55,7 @@ public class JobService {
     /** Persists a newly accepted job in the RECEIVED state. */
     @Transactional
     public JobEntity createJob(String eventId, String jobId, String correlationId, String jobType,
-                               JobPriority priority, String executionConfig) {
+                               JobPriority priority, String jobParameters) {
         JobEntity job = JobEntity.builder()
             .jobId(jobId)
             .eventId(eventId)
@@ -65,7 +65,7 @@ public class JobService {
             .status(JobStatus.RECEIVED)
             .attemptCount(0)
             .maxAttempts(props.retry().maxAttempts())
-            .executionConfig(executionConfig)
+            .jobParameters(jobParameters)
             .executionTimeoutSeconds((int) props.executionTimeout(jobType).toSeconds())
             .receivedAt(Instant.now())
             .build();
@@ -89,8 +89,8 @@ public class JobService {
      */
     @Transactional
     public JobEntity accept(String eventId, String jobId, String correlationId, String jobType,
-                            JobPriority priority, String executionConfig) {
-        JobEntity job = createJob(eventId, jobId, correlationId, jobType, priority, executionConfig);
+                            JobPriority priority, String jobParameters) {
+        JobEntity job = createJob(eventId, jobId, correlationId, jobType, priority, jobParameters);
         return queue(job.getJobId());
     }
 

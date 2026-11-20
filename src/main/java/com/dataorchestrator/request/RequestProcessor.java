@@ -57,10 +57,10 @@ public class RequestProcessor {
         String correlationId = payload.correlationId() == null || payload.correlationId().isBlank()
             ? UUID.randomUUID().toString() : payload.correlationId();
         JobPriority priority = payload.priority() == null ? JobPriority.NORMAL : payload.priority();
-        String configJson = toJson(payload.executionParameters());
+        String paramsJson = toJson(payload.jobParameters());
 
         JobEntity job = jobService.accept(payload.eventId(), jobId, correlationId,
-            payload.jobType(), priority, configJson);
+            payload.jobType(), priority, paramsJson);
         return new ProcessingOutcome(job, false);
     }
 
@@ -86,7 +86,7 @@ public class RequestProcessor {
         try {
             return objectMapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-            throw new JobValidationException("Failed to serialize execution parameters");
+            throw new JobValidationException("Failed to serialize job parameters");
         }
     }
 }

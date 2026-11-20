@@ -1,9 +1,11 @@
 package com.dataorchestrator.support;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 
 import com.dataorchestrator.config.OrchestratorProperties;
+import com.dataorchestrator.dataproc.SparkJobDefinition;
 
 /**
  * Shared test fixtures for building configuration and domain objects.
@@ -27,7 +29,10 @@ public final class TestFixtures {
                 Duration.ofSeconds(15), Duration.ofSeconds(60), Duration.ofSeconds(5),
                 Duration.ofMinutes(5)),
             new OrchestratorProperties.Otel(false, "data-job-orchestrator", null),
-            new OrchestratorProperties.Alerting(Duration.ofMinutes(30))
+            new OrchestratorProperties.Alerting(Duration.ofMinutes(30)),
+            Map.of("SEGMENT_PREVIEW",
+                new SparkJobDefinition("com.example.SparkApp", List.of("gs://bucket/app.jar"),
+                    Map.of("spark.executor.memory", "2g")))
         );
     }
 }

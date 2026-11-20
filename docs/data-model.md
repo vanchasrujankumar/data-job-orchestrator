@@ -22,7 +22,7 @@ stored as strings. `Instant` values are stored as BSON dates.
 | `dataprocJobId` | string | Dataproc execution identifier |
 | `dataprocProjectId` | string | GCP project |
 | `dataprocRegion` | string | GCP region |
-| `executionConfig` | string | Serialized `SparkJobSpec` JSON |
+| `jobParameters` | string | Serialized business parameters (JSON) passed to the Spark job as an argument |
 | `executionTimeoutSeconds` | int | Max execution duration |
 | `leaseOwner` | string | Replica id holding the dispatch reservation |
 | `leaseExpiresAt` | date | Reservation expiry (reconciliation) |
@@ -44,7 +44,7 @@ Sample document:
   "attemptCount": 2,
   "maxAttempts": 3,
   "dataprocJobId": "noop-job-1001-2",
-  "executionConfig": "{\"mainClass\":\"com.example.App\",\"jarFileUris\":[\"gs://b/app.jar\"],\"args\":[],\"properties\":{}}",
+  "jobParameters": "{\"previewMessage\":\"...\",\"segmentCriteria\":{...}}",
   "executionTimeoutSeconds": 1800,
   "receivedAt": "2026-11-19T12:00:00Z",
   "completedAt": "2026-11-19T12:05:00Z"

@@ -74,8 +74,8 @@ public class JobEntity {
 
     private String dataprocRegion;
 
-    /** Serialized {@code SparkJobSpec} JSON for this job. */
-    private String executionConfig;
+    /** Serialized business parameters (JSON) passed to the Spark job as an argument. */
+    private String jobParameters;
 
     private int executionTimeoutSeconds;
 

@@ -5,6 +5,10 @@ package com.dataorchestrator.dataproc;
  * Callers can classify these as retryable or permanent.
  */
 public class DataprocException extends RuntimeException {
+    public DataprocException(String message) {
+        super(message);
+    }
+
     public DataprocException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -124,7 +124,7 @@ classDiagram
         +int maxAttempts
         +Instant nextRetryAt
         +String dataprocJobId
-        +String executionConfig
+        +String jobParameters
         +String leaseOwner
     }
 
@@ -191,7 +191,7 @@ com.dataorchestrator
 ├── alert/          AlertService abstraction + logging impl
 ├── common/         correlation filter, exception handling, domain exceptions
 ├── config/         properties, Kafka, OpenTelemetry, MongoDB, OpenAPI
-├── dataproc/       DataprocClient (Serverless + Noop) and SparkJobSpec
+├── dataproc/       DataprocClient (Serverless + Noop), SparkJobSpec, SparkJobDefinition
 ├── job/            documents, repositories, state machine, JobService
 ├── metrics/        OpenTelemetry metrics
 ├── outbox/         transactional outbox + publisher

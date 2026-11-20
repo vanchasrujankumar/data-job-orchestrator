@@ -18,6 +18,7 @@ import com.dataorchestrator.dataproc.DataprocClient;
 import com.dataorchestrator.dataproc.DataprocException;
 import com.dataorchestrator.dataproc.DataprocSubmitRequest;
 import com.dataorchestrator.dataproc.DataprocSubmitResult;
+import com.dataorchestrator.dataproc.SparkJobDefinition;
 import com.dataorchestrator.dataproc.SparkJobSpec;
 import com.dataorchestrator.job.FailureClassifier;
 import com.dataorchestrator.job.FailureType;
@@ -28,7 +29,6 @@ import com.dataorchestrator.job.JobService;
 import com.dataorchestrator.job.JobStatus;
 import com.dataorchestrator.job.RetryPolicy;
 import com.dataorchestrator.metrics.OrchestratorMetrics;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Periodically claims eligible queued jobs and submits them to Dataproc asynchronously,
@@ -48,13 +48,12 @@ public class JobDispatcher {
     private final OrchestratorProperties props;
     private final InstanceIdentity instanceIdentity;
     private final OrchestratorMetrics metrics;
-    private final ObjectMapper objectMapper;
 
     public JobDispatcher(JobRepository jobRepository, JobService jobService,
                          ConcurrencyService concurrencyService,
                          SchedulerControlService schedulerControl, DataprocClient dataprocClient,
                          OrchestratorProperties props, InstanceIdentity instanceIdentity,
-                         OrchestratorMetrics metrics, ObjectMapper objectMapper) {
+                         OrchestratorMetrics metrics) {
         this.jobRepository = jobRepository;
         this.jobService = jobService;
         this.concurrencyService = concurrencyService;
@@ -63,7 +62,6 @@ public class JobDispatcher {
         this.props = props;
         this.instanceIdentity = instanceIdentity;
         this.metrics = metrics;
-        this.objectMapper = objectMapper;
     }
 
     @Scheduled(fixedDelayString = "${orchestrator.scheduling.dispatch-interval}")
@@ -90,15 +88,14 @@ public class JobDispatcher {
     }
 
     private void dispatchOne(JobEntity job) {
-        SparkJobSpec spec = parseSpec(job);
         String project = props.dataproc().projectId();
         String region = props.dataproc().region();
-
         int attemptNumber = jobService.beginAttempt(job.getJobId());
-        DataprocSubmitRequest request = new DataprocSubmitRequest(
-            job.getJobId(), attemptNumber, spec, project, region);
 
         try {
+            SparkJobSpec spec = resolveSpec(job);
+            DataprocSubmitRequest request = new DataprocSubmitRequest(
+                job.getJobId(), attemptNumber, spec, project, region);
             DataprocSubmitResult result = dataprocClient.submit(request);
             jobService.markSubmitted(job.getJobId(), result.dataprocJobId(), project, region);
         } catch (DataprocException e) {
@@ -123,13 +120,18 @@ public class JobDispatcher {
         jobService.failRetryable(job.getJobId(), type, e.getMessage(), nextRetry);
     }
 
-    private SparkJobSpec parseSpec(JobEntity job) {
-        try {
-            return objectMapper.readValue(job.getExecutionConfig(), SparkJobSpec.class);
-        } catch (Exception e) {
-            throw new DataprocException("Failed to parse execution config for job "
-                + job.getJobId(), e);
+    /**
+     * Builds the Spark execution spec from the configured per-job-type definition plus the
+     * job's business parameters, which are passed to the Spark job as a single JSON argument.
+     */
+    private SparkJobSpec resolveSpec(JobEntity job) {
+        SparkJobDefinition definition = props.sparkJob(job.getJobType());
+        if (definition == null) {
+            throw new DataprocException("No Spark job definition configured for job type "
+                + job.getJobType());
         }
+        return new SparkJobSpec(definition.mainClass(), definition.jarFileUris(),
+            List.of(job.getJobParameters()), definition.properties());
     }
 
     private Comparator<JobEntity> priorityComparator() {

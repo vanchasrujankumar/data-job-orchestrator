@@ -47,7 +47,7 @@ api/            REST controllers + DTOs
 alert/          AlertService port + LoggingAlertService (pluggable; no real platform)
 common/         CorrelationIdFilter, GlobalExceptionHandler (RFC 9457), domain exceptions
 config/         OrchestratorProperties, KafkaConfig, MongoConfig, OpenTelemetryConfig, OpenApiConfig
-dataproc/       DataprocClient (GoogleDataprocServerlessClient + NoopDataprocClient), SparkJobSpec
+dataproc/       DataprocClient (GoogleDataprocServerlessClient + NoopDataprocClient), SparkJobSpec, SparkJobDefinition
 job/            MongoDB documents, repositories, JobStateMachine, JobService, RetryPolicy, FailureClassifier
 metrics/        OrchestratorMetrics (OTEL Meter)
 outbox/         OutboxEventEntity + OutboxPublisher (relay) + OutboxService
@@ -75,6 +75,9 @@ indexes at startup. Transactions (`@Transactional` on `JobService`) require the 
    previous `@PrePersist` default was lost in the JPA→Mongo migration and caused a silent
    "events never published" bug — `OutboxServiceTest` guards this).
 7. **Metrics cardinality** — never use `jobId` as a metric label; only `jobType`.
+8. **Spark job definition is config, not Kafka** — the Spark workload (main class, jar files,
+   `spark.*` properties) lives in `orchestrator.spark-jobs.{jobType}`. Kafka only carries the
+   business `jobParameters`, which are passed to the Spark job as one JSON argument.
 
 ## Known gaps (not yet implemented)
 
